@@ -26,7 +26,6 @@ This where we come up with the idea to build a **discord bot** that lives within
 ## Accomplishments that we're proud of
 * For some of us, it was our first time working with **discord.py** or **Google Firebase**. We are proud that we worked through our project pretty smoothly.
 * Learning how to deal with date and time such that we are able to send out reminders at an accurate time. And of course, dealing with timezones and daylight savings.
-## What we learned
 
 ## What's next for Agenda Bot
 * Direct Message the Agenda Bot
