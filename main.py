@@ -68,6 +68,8 @@ class Event:
 		s += repr(self.event_description) + ")"
 		return s
 
+	def strikethrough(self):
+		self.event_name = "~~" + self.event_name + "~~"
 
 class Agenda:
 	events = []
@@ -103,9 +105,18 @@ class Agenda:
 		embed = discord.Embed(title="Agenda", color=0x00ffff)
 		if len(self.events) > 0:
 			embed.description = "Here are the upcoming events:"
-			embed.add_field(name="Date", value=dates_str, inline=True)
-			embed.add_field(name="Time", value=times_str, inline=True)
-			embed.add_field(name="Name", value=names_str, inline=True)
+			for i in range(len(self.events)):
+				j = self.events[i]
+				field_title = "__" + str(i+1) + ".__ " + j.event_name[:50] + "..." * (len(j.event_name) > 50)
+				field_value = f"> {date_to_string(j.event_datetime, ctx.guild.id)} @{time_to_string(j.event_datetime, ctx.guild.id)}"
+				
+				if not is_valid_datetime(j.event_datetime):
+					field_title = "~~" + field_title + "~~"
+				embed.add_field(name=field_title, value=field_value, inline=False)
+			#1/2/2020 @5:00PM
+			# embed.add_field(name="Date", value=dates_str, inline=True)
+			# embed.add_field(name="Time", value=times_str, inline=True)
+			# embed.add_field(name="Name", value=names_str, inline=True)
 		else:
 			embed.description = "There is nothing here!"
 		
@@ -143,7 +154,6 @@ class Agenda:
 				content_msg = "An event has started!" 
 
 			await channel.send(content=f"@here\n{content_msg}", embed=embed)
-
 
 class Global:
 	# map: key -> value = guild_id -> guild's private agenda
@@ -391,7 +401,10 @@ async def newEvent(ctx, *, args=""):
 		await ctx.send("Usage: /event name date [time] [description]")
 		#await ctx.send("You are missing the date of the event!\nPlease specify one!")
 		return
-
+	print(time_match)
+	time_args = None
+	if time_match is None:
+		time_match = re.search('\d{1,2}:\d{2}(AM|PM|am|pm)?', "12:00am")
 	if time_match != None:
 		# time_end = time_match.end()
 		time_str = time_match.group()
