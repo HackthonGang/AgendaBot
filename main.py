@@ -314,7 +314,7 @@ async def newEvent(ctx, *, args=""):
 		return
 	date_match = re.search('\d{1,2}/\d{1,2}/\d{4}', args)
 	#"10:24PM"
-	time_match = re.search('\d{1,2}:\d{2}(AM|PM|am|pm)?', args)
+	time_match = re.search('\d{1,2}:\d{2}(AM|PM|am|pm|Am|aM|Pm|pM)?', args)
 	title = None
 	desc = None
 
