@@ -222,35 +222,6 @@ def date_to_string(utc_dt, guild_id): # DT MUST BE A UTC TIME!!!!
 	return str(dt.day) + "/" + str(dt.month) + "/" + str(dt.year)
 
 def time_to_string(utc_tm, guild_id):
-	# (21:22:23) -> (21:22) -> (9:22PM)
-
-	
-	#IS DAYLIGHT SAVING TIME
-	# timezones {
-	# 	amsterdam : (1,CEDT) if daylight_savings else (2,CEST),
-	# 	brazil : (-3, AMDT) if daylight_savings else (-4, AMST),
-	# 	dubai : 
-	# 	eu_central
-	# 	eu_west
-	# 	europe
-	# 	frankfurt
-	# 	hongkong : (8, HKT)
-	# 	india : (5.5, IST)
-	# 	japan : (9, JST)
-	# 	london 
-	# 	russia
-	# 	singapore : (8, SST)
-	# 	southafrica 
-	# 	south_korea
-	# 	sydney : 
-	# 	us_central : (-5, CDT) if daylight_savings else (-6, CST),
-	# 	us_east : (-4, EDT) if daylight_savings else (-5, EST), 
-	# 	us_south : (-4, EDT) if daylight_savings else (-5, EST), 
-	# 	us_west : (-7, PDT) if daylight_savings else (-8,PST),
-	# 	vip_amsterdam : (1,CEDT) if daylight_savings else (2,CEST)
-	# 	vip_us_east : (-4, EDT) if daylight_savings else (-5, EST),
-	# 	vip_us_west : (-7, PDT) if daylight_savings else (-8,PST),
-	# }
 
 	tz = get_setting(guild_id, "time_zone")
 	daylight_on = get_setting(guild_id, "daylight_on", False)
@@ -317,27 +288,6 @@ async def on_ready():
 class Main_Commands():
 	def __init__(self, bot):
 		self.bot = bot
-
-"""
-LIST OF COMMANDS
-/agenda -> displays the upcoming events
-
-1. event1
-2. event2
-remove 1
-
-
-
-
-/newEvent name date [time] [description] -> creates an event
-/removeEvent eventID -> Removes event from agenda
-/newAgenda
-/removeAgenda
-/
-/
-/
-/
-"""
 
 @bot.command(pass_context=True, aliases=['event','Event','newevent'])
 async def newEvent(ctx, *, args=""):
@@ -454,7 +404,6 @@ async def newEvent(ctx, *, args=""):
 			embed.add_field(name="Time", value=time_str, inline=True)
 		
 			await ctx.send(embed=embed)
-			#new_event.msg_id = str(event_msg.id)
 
 @bot.command(pass_context=True, aliases=['agenda'])
 async def showagenda(ctx, arg = " ", value=""):
@@ -708,29 +657,6 @@ async def help(ctx, arg=""):
 		help_embed.add_field(name=s1, value="Type `/help [command name]` to get more information about a command", inline=True)
 	await ctx.send(embed=help_embed)
 
-# @bot.command(pass_context=True)
-# async def settimezone(ctx, arg):
-# 	# timezones = {
-# 	# 	'ET' : -4,
-# 	# 	'EST' : -5,
-# 	# 	'EDT' : -4,
-# 	# 	'A' : 1,
-# 	# 	'ACDT' : 10.5,
-# 	# 	'ACST' : 9.5,
-# 	# }
-# 	#if arg in timezones:
-# 	#set_setting(ctx.guild_id, "timezone", arg)
-
-# 	new_tz = arg.upper()
-# 	if new_tz not in timezones:
-# 		await ctx.send(f"{new_tz} is not a valid time zone!")
-# 		return
-	
-# 	# cur_agenda = bot_global.get_agenda(ctx.guild.id)
-# 	# cur_agenda.current_timezone = new_tz
-# 	set_setting(ctx.guild.id, "time_zone", new_tz)
-# 	await ctx.send(f"The time zone is set to {new_tz}!")
-
 @bot.event
 async def on_guild_join(guild: discord.guild):
 	first_ch = None
@@ -757,11 +683,6 @@ def save_agenda(guild_id):
 	agendas_doc_ref.set({
 		"events_repr" : repr(this_agenda) 
 		#^^ looks like [Event(datetime,title,desc),Event(datetime,title,desc)] just need to eval
-		# u'msg_id' : str(i.msg_id),
-		# u'event_datetime' : str(i.event_datetime),
-		# u'event_name' : str(i.event_name),
-		# u'event_description' : str(i.event_description),
-		# u'shown_reminder' : str(i.shown_reminder)
 	})
 
 def load_agenda(guild_id):
@@ -800,21 +721,5 @@ def load_settings(guild_id):
 		loaded_settings["reminder_time"] = loaded_settings["reminder_time"] if "reminder_time" in loaded_settings else None
 
 	return loaded_settings
-
-
-
-
-
-# settings_doc_ref = db.collection(u'settings')
-
-# collection "settings":
-# 	page "[guild_id]":
-# 		time_zone: string
-# 		daylight_on: bool
-#		reminder_time: number	
-# 		posting_channel: string
-
-
-
 
 bot.run(os.environ['BOT_TOKEN'])
