@@ -68,9 +68,6 @@ class Event:
 		s += repr(self.event_description) + ")"
 		return s
 
-	def strikethrough(self):
-		self.event_name = "~~" + self.event_name + "~~"
-
 class Agenda:
 	events = []
 
@@ -182,8 +179,6 @@ class Global:
 		self.agendas[guild_id].events = value
 	def sort_agenda(self,guild_id):
 		(self.agendas[guild_id]).sort_events()
-
-
 
 
 	@tasks.loop(seconds=update_interval)
