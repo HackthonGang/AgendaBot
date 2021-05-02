@@ -141,7 +141,7 @@ class Agenda:
 		embed.add_field(name="Time", value=time_str, inline=True)
 
 		posting_channel = get_setting(guild_id, "posting_channel")
-		print(posting_channel)
+		#print(posting_channel)
 		if posting_channel != None:
 			channel = bot.get_channel(posting_channel)
 			if approaching:
@@ -191,7 +191,7 @@ class Global:
 			max_limit = get_setting(guild_id, "reminder_time")
 			for i in agenda_i.events: # 15 minute default
 				#COMMENT THIS LATER
-				print(get_deltatime_from_now(i.event_datetime).total_seconds())
+				#print(get_deltatime_from_now(i.event_datetime).total_seconds())
 				if (max_limit * 60 - update_interval) < get_deltatime_from_now(i.event_datetime).total_seconds() <= (max_limit * 60): # tolerace = just before 14 and 15 inclusive
 					if get_setting(guild_id, "reminder_time") != 0:
 						await agenda_i.send_notifications(i, guild_id, approaching=True)
@@ -396,7 +396,7 @@ async def newEvent(ctx, *, args=""):
 		await ctx.send("Usage: /event name date [time] [description]")
 		#await ctx.send("You are missing the date of the event!\nPlease specify one!")
 		return
-	print(time_match)
+	#print(time_match)
 	time_args = None
 	if time_match is None:
 		time_match = re.search('\d{1,2}:\d{2}(AM|PM|am|pm)?', "12:00am")
