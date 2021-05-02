@@ -277,6 +277,9 @@ async def on_ready():
 		print("Something went wrong while retrieving saved data: " + str(e))
 
 	print("Bot has started!")
+	
+	load_agenda(ctx.guild.id)
+
 	#DELAY START TIMER
 	# wait until xx:xx:00ms before starting 
 	time_delay = (datetime.now() - timedelta(seconds=datetime.now().second) + timedelta(minutes=1)) - datetime.now()
@@ -407,7 +410,6 @@ async def newEvent(ctx, *, args=""):
 
 @bot.command(pass_context=True, aliases=['agenda'])
 async def showagenda(ctx, arg = " ", value=""):
-	load_agenda(ctx.guild.id)
 	if arg.lower() == "clear":
 		bot_global.get_agenda(ctx.guild.id).events = []
 	if arg.lower() == 'remove':
