@@ -9,6 +9,7 @@ import time
 from datetime import datetime, timedelta
 from discord.ext import commands, tasks
 from firebase_admin import credentials, firestore
+from keep_alive import keep_alive
 
 ## CONSTANTS
 bot = commands.Bot("/")
@@ -277,8 +278,6 @@ async def on_ready():
 		print("Something went wrong while retrieving saved data: " + str(e))
 
 	print("Bot has started!")
-	
-	load_agenda(ctx.guild.id)
 
 	#DELAY START TIMER
 	# wait until xx:xx:00ms before starting 
@@ -661,6 +660,7 @@ async def help(ctx, arg=""):
 
 @bot.event
 async def on_guild_join(guild: discord.guild):
+	#print("I joined " + guild.name)
 	first_ch = None
 	ch = None
 	for c in guild.text_channels:
@@ -723,5 +723,8 @@ def load_settings(guild_id):
 		loaded_settings["reminder_time"] = loaded_settings["reminder_time"] if "reminder_time" in loaded_settings else None
 
 	return loaded_settings
+
+# Keep the bot alive
+keep_alive()
 
 bot.run(os.environ['BOT_TOKEN'])
