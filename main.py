@@ -4,7 +4,6 @@ import discord
 import asyncio
 import firebase_admin
 import json
-import time
 
 from datetime import datetime, timedelta
 from discord.ext import commands, tasks
@@ -283,7 +282,7 @@ async def on_ready():
 	# wait until xx:xx:00ms before starting 
 	time_delay = (datetime.now() - timedelta(seconds=datetime.now().second) + timedelta(minutes=1)) - datetime.now()
 	print("Waiting to recover from offset of: " + str(time_delay.total_seconds()) + "...")
-	time.sleep(time_delay.total_seconds())
+	await asyncio.sleep(time_delay.total_seconds())
 	bot_global.update.start()
 	print("Timer has started!")
 	 	
