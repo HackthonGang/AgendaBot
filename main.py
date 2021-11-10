@@ -66,7 +66,7 @@ class Event:
 		s += repr(self.event_datetime).replace("datetime.","") + ","
 		s += repr(self.event_name) + ","
 		s += repr(self.event_description) + ")"
-		return s
+		return s 
 
 class Agenda:
 	events = []
@@ -305,7 +305,7 @@ async def newEvent(ctx, *, args=""):
 	if not get_setting(ctx.guild.id,"time_zone"):
 		await ctx.send("Your timezone has not been set. Use `/set timezone <timezone>`. To see a list of timezones, use `/timezones`")
 		unset_settings = True
-	if not get_setting(ctx.guild.id,"daylight_on"): 
+	if get_setting(ctx.guild.id,"daylight_on") is None: 
 		await ctx.send("Your Daylight Savings Time mode has not been set yet. Use `/set daylight <on/off>`")
 		unset_settings = True
 	if not get_setting(ctx.guild.id,"reminder_time"):
