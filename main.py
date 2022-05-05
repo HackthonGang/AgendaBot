@@ -1,12 +1,12 @@
 import os
 import re
-import discord
+import nextcord
 import asyncio
 import firebase_admin
 import json
 
 from datetime import datetime, timedelta
-from discord.ext import commands, tasks
+from nextcord.ext import commands, tasks
 from firebase_admin import credentials, firestore
 from keep_alive import keep_alive
 
@@ -99,7 +99,7 @@ class Agenda:
 			names_str += "__" + str(i+1) + "__ " + j.event_name[:50] + "..." * (len(j.event_name) > 50) + "\n"
 			# s += f"{i+1}. {date_str} {time_str} {j.event_name}\n"
 		
-		embed = discord.Embed(title="Agenda", color=0x00ffff)
+		embed = nextcord.Embed(title="Agenda", color=0x00ffff)
 		if len(self.events) > 0:
 			embed.description = "Here are the upcoming events:"
 			for i in range(len(self.events)):
@@ -135,7 +135,7 @@ class Agenda:
 		"""
 		date_str = date_to_string(event.event_datetime, guild_id) # str(date_object.date()).replace('-','/')
 		time_str = time_to_string(event.event_datetime, guild_id)
-		embed = discord.Embed(title=event.event_name, description=event.event_description, color=0x00ff00)
+		embed = nextcord.Embed(title=event.event_name, description=event.event_description, color=0x00ff00)
 	
 		embed.add_field(name="Date", value=date_str, inline=True)
 		embed.add_field(name="Time", value=time_str, inline=True)
@@ -161,6 +161,7 @@ class Global:
 		#time_zone -> string
 		#daylight_on -> bool
 	}
+	init_done = False
 
 
 	def add_agenda(self, guild_id):
@@ -183,6 +184,11 @@ class Global:
 
 	@tasks.loop(seconds=update_interval)
 	async def update(self):
+		# Update the interval based on if it is already initialized or not
+		if self.init_done:
+			self.update.change_interval(seconds=update_interval)
+		else:
+			self.init_done = True
 		#1. loop agenda's events 
 		#2. check event deltatime ONLY IF IT IS THE SAME DAY AS TODAY
 		#3. if deltatime is <= 0 
@@ -198,6 +204,8 @@ class Global:
 				elif -2 < get_deltatime_from_now(i.event_datetime).total_seconds() <= 0:
 					await agenda_i.send_notifications(i, guild_id)
 						#i.shown_reminder = True
+		
+		print("Updated: " + str(datetime.now()))
 #GLOBAL
 bot_global = Global()
 
@@ -279,10 +287,11 @@ async def on_ready():
 	print("Bot has started!")
 
 	#DELAY START TIMER
-	# wait until xx:xx:00ms before starting 
-	time_delay = (datetime.now() - timedelta(seconds=datetime.now().second) + timedelta(minutes=1)) - datetime.now()
-	print("Waiting to recover from offset of: " + str(time_delay.total_seconds()) + "...")
-	await asyncio.sleep(time_delay.total_seconds())
+	#wait until xx:xx:00ms before starting 
+	time_delay = (datetime.now() - timedelta(seconds=datetime.now().second) + timedelta(seconds=update_interval)) - datetime.now()
+	print("Recovering from offset of: " + str(time_delay.total_seconds()) + "...")
+	#await asyncio.sleep(time_delay.total_seconds())
+	bot_global.update.change_interval(seconds=time_delay.total_seconds())
 	bot_global.update.start()
 	print("Timer has started!")
 	 	
@@ -399,7 +408,7 @@ async def newEvent(ctx, *, args=""):
 
 			bot_global.get_agenda(ctx.guild.id).add_event(new_event,ctx.guild.id,to_sort=True)
 
-			embed = discord.Embed(title=title, description=desc, color=0x00ff00)
+			embed = nextcord.Embed(title=title, description=desc, color=0x00ff00)
 			
 			embed.add_field(name="Date", value=date_str, inline=True)
 			embed.add_field(name="Time", value=time_str, inline=True)
@@ -490,7 +499,7 @@ async def set(ctx, setting_arg="", value=""):
 		await ctx.send("The setting you mentioned does not exist!")
 	
 async def show_timezones(ctx): # print the embed with all of the timezones
-	timezone_embed = discord.Embed(title="Available Timezones", color=0xff00ff)
+	timezone_embed = nextcord.Embed(title="Available Timezones", color=0xff00ff)
 	s1 = ""
 	s2 = ""
 	s3 = ""
@@ -579,7 +588,7 @@ async def setup(ctx, timeout = 120.0):
 
 	bot_global.add_agenda(ctx.guild.id)
 
-	confirmation_embed = discord.Embed(title="Your Agenda Settings", color=0xffff00)
+	confirmation_embed = nextcord.Embed(title="Your Agenda Settings", color=0xffff00)
 			
 	confirmation_embed.add_field(name="Posting Channel", value="<#" + str(notif_channel) + ">", inline=True)
 	confirmation_embed.add_field(name="Remind Within", value=f"{reminder_time} min(s)", inline=True)
@@ -595,7 +604,7 @@ async def settings(ctx,arg=""):
 		set_setting(ctx.guild.id, "daylight_on",None)
 		set_setting(ctx.guild.id, "reminder_time",None)
 
-	settings_embed = discord.Embed(title="Your Agenda Settings", color=0xffff00)
+	settings_embed = nextcord.Embed(title="Your Agenda Settings", color=0xffff00)
 
 	notif_channel = get_setting(ctx.guild.id, "posting_channel")
 	time_zone = get_setting(ctx.guild.id, "time_zone")
@@ -645,10 +654,10 @@ async def help(ctx, arg=""):
 		if index == -1:
 			await ctx.send("That is not a valid command. Use `/help` to see the possible commands")
 			return
-		help_embed = discord.Embed(title=arg.capitalize(), color=0xffffff)
+		help_embed = nextcord.Embed(title=arg.capitalize(), color=0xffffff)
 		help_embed.add_field(name=commands[i], value=descriptions[i], inline=False)
 	else:
-		help_embed = discord.Embed(title="Commands", color=0xffffff)
+		help_embed = nextcord.Embed(title="Commands", color=0xffffff)
 		s1 = ""
 		s2 = ""
 		for i in range(len(commands)):
@@ -658,7 +667,7 @@ async def help(ctx, arg=""):
 	await ctx.send(embed=help_embed)
 
 @bot.event
-async def on_guild_join(guild: discord.guild):
+async def on_guild_join(guild: nextcord.guild):
 	#print("I joined " + guild.name)
 	first_ch = None
 	ch = None
