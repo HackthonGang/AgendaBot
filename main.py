@@ -298,7 +298,7 @@ async def on_ready():
 class Main_Commands():
 	def __init__(self, bot):
 		self.bot = bot
-
+	
 @bot.command(pass_context=True, aliases=['event','Event','newevent'])
 async def newEvent(ctx, *, args=""):
 	unset_settings = False

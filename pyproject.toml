@@ -6,10 +6,10 @@ authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-discord = "^1.0.1"
 firebase-admin = "^5.0.0"
 flask = "^1.1.2"
 waitress = "^2.0.0"
+nextcord = "^2.0.0-alpha.10"
 
 [tool.poetry.dev-dependencies]
 
